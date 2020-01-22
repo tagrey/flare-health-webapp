@@ -13,13 +13,17 @@ def upload_document():
 	file = request.files['file']
 	if file:
 		file.save("example.txt")
-		flash("Upload Successful!")
-		return render_template('index.html')
+		flash("Upload Successful!", "feedback")
+	flash("No file chosen", "feedback")
+	return render_template('index.html')
 
-@app.route("/analyze", methods=['GET'])
+
+@app.route("/analyze", methods=['POST'])
 def analyze():
-	top_25 = analyze_file()
-	flash(top_25)
+	exclude_stop_words = request.form.get('exclude-stop-words')
+	top_25 = analyze_file(exclude_stop_words)
+	for pair in top_25:
+		flash(pair, "analysis")
 	return render_template('index.html')
 
 if __name__ == "__main__":

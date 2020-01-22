@@ -1,6 +1,6 @@
 ## Analyze, stem, and exclude stop words from analysis
 
-def analyze_file(exclude_stop_words=False):
+def analyze_file(exclude_stop_words):
 	stop_words = set()
 	if exclude_stop_words:
 		with open('files/stop-words.txt') as stop_words_file:
@@ -12,7 +12,7 @@ def analyze_file(exclude_stop_words=False):
 			words = line.replace('\n', '').split(' ')
 			for word in words:
 				word = word.lower()
-				if exclude_stop_words and word not in stop_words and word != '':
+				if word not in stop_words and word != '':
 					if word not in frequencies:
 						frequencies[word] = 0
 					frequencies[word] += 1

@@ -9,12 +9,37 @@
     <input type=file name=file>
     <input type=submit value=Upload>
 </form>
-{% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-{% endfor %}
-<form name="analyze" action='/analyze'>
-	 <input type='Submit' value='Analyze File'>
+
+{% with feedback = get_flashed_messages(category_filter=["feedback"]) %}
+{% if feedback %}
+<div class="feedback">
+	<ul>
+	{%- for msg in feedback %}
+	<li>{{ msg }}</li>
+	{% endfor -%}
+	</ul>
+</div>
+{% endif %}
+{% endwith %}
+
+<form name="analyze" method=post action='/analyze'>
+	<label for="exclude-stop-words">Exclude Stop Words</label>
+	<input type="checkbox" name="exclude-stop-words">
+	<input type='Submit' value='Analyze File'>
 </form>
+
+{% with analysis = get_flashed_messages(category_filter=["analysis"]) %}
+{% if analysis %}
+<div class="alert-message block-message error">
+	<ul>
+	{%- for msg in analysis %}
+	<li>{{ msg }}</li>
+	{% endfor -%}
+	</ul>
+</div>
+{% endif %}
+{% endwith %}
+
 </body>
 
 </html>
