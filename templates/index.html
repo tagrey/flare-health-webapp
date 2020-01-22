@@ -5,6 +5,16 @@
 <h1>
   Word Frequency Analyzer
 </h1>
+<form method=post enctype=multipart/form-data action=/upload_document>
+    <input type=file name=file>
+    <input type=submit value=Upload>
+</form>
+{% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+{% endfor %}
+<form name="analyze" action='/analyze'>
+	 <input type='Submit' value='Analyze File'>
+</form>
 </body>
 
 </html>
