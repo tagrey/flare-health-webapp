@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, flash
+from analyze import analyze_file
 import os
 app = Flask(__name__)
 app.secret_key = 'wvjknsdvrbksvd609'
@@ -17,19 +18,8 @@ def upload_document():
 
 @app.route("/analyze", methods=['GET'])
 def analyze():
-	frequencies = dict()
-	with open('example.txt') as text_file:
-		line = text_file.readline()
-		while line:
-			words = line.split(' ')
-			for word in words:
-				word = word.replace('\n', '')
-				if word not in frequencies:
-					frequencies[word] = 0
-				frequencies[word] += 1
-			line = text_file.readline()
-		top_25 = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)[:25]
-		flash(top_25)
+	top_25 = analyze_file()
+	flash(top_25)
 	return render_template('index.html')
 
 if __name__ == "__main__":
