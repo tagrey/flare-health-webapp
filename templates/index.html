@@ -4,7 +4,6 @@
 <link href='//fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
 <link href='//fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
 <style>
-html {height: 100%;}
 body {
   background-color: #ccccff;
 }
@@ -30,7 +29,7 @@ h1:hover {
   Word Frequency Analyzer
 </h1>
 
-<div align=left>
+<div float=left style="width: 50%">
 	<form method=post enctype=multipart/form-data action=/upload_document>
 	    <input type=file name=file>
 	    <input type=submit value=Upload>
@@ -77,22 +76,26 @@ h1:hover {
 	{% endwith %}
 </div>
 
-<div align=right>
+<div align=right style="width: 50%">
 	<label for="view_analysis">View an Old Analysis</label>
+	
 	<form name="view_analysis" method=post action='/view_analysis'>
-		<select>
+		<div class=box style='width: 50%; text-overflow: ellipsis;display: block;white-space: nowrap;'>
+		<select name='analysis_details'>
 		  {% for item in data %}
             +"<option>{{ item|safe }}</option>"
             {% endfor %}
 		</select>
+		</div>
 		<input type='Submit' value='View'>
 	</form>
+	
 
 	{% with old_analysis = get_flashed_messages(category_filter=["old_analysis"]) %}
 	{% if old_analysis %}
 	<div class="alert-message block-message error">
 		<ul>
-		{%- for msg in analysis %}
+		{%- for msg in old_analysis %}
 		<li>{{ msg }}</li>
 		{% endfor -%}
 		</ul>

@@ -1,4 +1,5 @@
 ## Analyze, stem, and exclude stop words from analysis
+import datetime
 
 def analyze_file(exclude_stop_words):
 	stop_words = set()
@@ -27,7 +28,8 @@ def get_query(exclude_stop_words, top_25):
 	top_25 = str(top_25).replace('\'', '\'\'')
 	with open("example.txt") as file_text:
 		original_text = ''.join(file_text.readlines()).replace('\'', '\'\'')
-	query = """INSERT INTO recent_analyses (original_text, exclude_stop_words, word_frequencies) VALUES ('{}','{}','{}')""".format(original_text,exclude_stop_words,top_25)
+	now = datetime.datetime.now()
+	query = """INSERT INTO recent_analyses (original_text, exclude_stop_words, word_frequencies, date) VALUES ('{}','{}','{}','{}')""".format(original_text,exclude_stop_words,top_25,now)
 	return query
 
 def stem_word(word):

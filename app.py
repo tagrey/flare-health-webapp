@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, flash
 from analyze import analyze_file, get_query
 from flaskext.mysql import MySQL
 import json
+from ast import literal_eval
 
 app = Flask(__name__)
 app.secret_key = 'wvjknsdvrbksvd609'
@@ -16,7 +17,6 @@ app.config['MYSQL_DATABASE_SOCKET'] = None
 
 @app.route("/")
 def main():
-	recent_analyses = get_recent_analyses()
 	return render_template('index.html', data=get_recent_analyses())
 
 @app.route("/upload_document", methods=['POST'])
@@ -47,7 +47,13 @@ def analyze():
 @app.route("/view_analysis", methods=['POST'])
 def view_analysis():
 	recent_analyses = get_recent_analyses()
+	most_recent_analysis = str(recent_analyses[0])
+	most_recent_top_25 = literal_eval(literal_eval(most_recent_analysis)[2])
+	top_25 = request.form.get('analysis_details')
+	top_25 = literal_eval(literal_eval(top_25)[2])
 	for pair in top_25:
+		flash(pair, "old_analysis")
+	for pair in most_recent_top_25: #need to rerender the most recent analysis we did on the left
 		flash(pair, "analysis")
 	return render_template('index.html', data=get_recent_analyses())
 
@@ -62,7 +68,7 @@ def make_query(query):
 	return output
 
 def get_recent_analyses():
-	query = """SELECT SUBSTRING(original_text, 1, 15), exclude_stop_words FROM recent_analyses LIMIT 10"""
+	query = """SELECT SUBSTRING(original_text, 1, 15), exclude_stop_words, word_frequencies FROM recent_analyses ORDER BY date DESC LIMIT 10"""
 	return make_query(query)
 
 if __name__ == "__main__":
