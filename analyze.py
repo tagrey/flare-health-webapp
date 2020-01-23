@@ -1,5 +1,5 @@
 ## Analyze, stem, and exclude stop words from analysis
-import datetime
+import datetime,os
 
 def analyze_file(exclude_stop_words):
 	stop_words = set()
@@ -7,7 +7,7 @@ def analyze_file(exclude_stop_words):
 		with open('files/stop-words.txt') as stop_words_file:
 			stop_words = set(word.replace('\n', '') for word in stop_words_file.readlines())
 	frequencies = dict()
-	with open('example.txt') as text_file:
+	with open('tmp.txt') as text_file:
 		line = text_file.readline()
 		while line:
 			words = line.replace('\n', '').split(' ')
@@ -19,11 +19,12 @@ def analyze_file(exclude_stop_words):
 							frequencies[word] = 0
 						frequencies[word] += 1
 			line = text_file.readline()
+	os.remove('tmp.txt')
 	top_25 = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)[:25]
 	query = get_query(exclude_stop_words, top_25)
 	return top_25, query
 
-def get_query(exclude_stop_words, top_25):
+def get_query(exclude_stop_words, top_25): #build query for inserting into database
 	exclude_stop_words = int(exclude_stop_words)
 	top_25 = str(top_25).replace('\'', '\'\'')
 	with open("example.txt") as file_text:

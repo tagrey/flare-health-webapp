@@ -21,12 +21,13 @@ def main():
 
 @app.route("/upload_document", methods=['POST'])
 def upload_document():
+	#endlpoint handling file upload
 	recent_analyses = get_recent_analyses()
 	file = request.files['file']
 	if file:
-		file.save("example.txt")
+		file.save("tmp.txt") #use this as a temp file
 		flash("Upload Successful!", "feedback")
-		with open("example.txt") as file_text:
+		with open("tmp.txt") as file_text:
 			file_string = ''.join(file_text.readlines())
 			flash(file_string, 'text_preview')
 	else:
@@ -36,6 +37,7 @@ def upload_document():
 
 @app.route("/analyze", methods=['POST'])
 def analyze():
+	#endpoint handling analysis of a file
 	recent_analyses = get_recent_analyses()
 	exclude_stop_words = request.form.get('exclude-stop-words') is not None
 	top_25, query = analyze_file(exclude_stop_words)
@@ -46,6 +48,7 @@ def analyze():
 
 @app.route("/view_analysis", methods=['POST'])
 def view_analysis():
+	#endpoint handling viewing the results of an old analysis
 	recent_analyses = get_recent_analyses()
 	most_recent_analysis = str(recent_analyses[0])
 	most_recent_top_25 = literal_eval(literal_eval(most_recent_analysis)[2])
@@ -58,6 +61,7 @@ def view_analysis():
 	return render_template('index.html', data=get_recent_analyses())
 
 def make_query(query):
+	#execute a SQL query
 	cnx = mysql.connect()
 	cursor = cnx.cursor()
 	cursor.execute(query)
@@ -68,6 +72,7 @@ def make_query(query):
 	return output
 
 def get_recent_analyses():
+	#always need to query the most recent analyses to pass to index.html
 	query = """SELECT SUBSTRING(original_text, 1, 15), exclude_stop_words, word_frequencies FROM recent_analyses ORDER BY date DESC LIMIT 10"""
 	return make_query(query)
 
