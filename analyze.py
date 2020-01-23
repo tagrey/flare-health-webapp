@@ -11,14 +11,24 @@ def analyze_file(exclude_stop_words):
 		while line:
 			words = line.replace('\n', '').split(' ')
 			for word in words:
-				word = stem_word(word).lower()
-				if word not in stop_words and word != '':
-					if word not in frequencies:
-						frequencies[word] = 0
-					frequencies[word] += 1
+				if word != '':
+					word = stem_word(word).lower()
+					if word not in stop_words:
+						if word not in frequencies:
+							frequencies[word] = 0
+						frequencies[word] += 1
 			line = text_file.readline()
 	top_25 = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)[:25]
-	return top_25
+	query = get_query(exclude_stop_words, top_25)
+	return top_25, query
+
+def get_query(exclude_stop_words, top_25):
+	exclude_stop_words = int(exclude_stop_words)
+	top_25 = str(top_25).replace('\'', '\'\'')
+	with open("example.txt") as file_text:
+		original_text = ''.join(file_text.readlines()).replace('\'', '\'\'')
+	query = """INSERT INTO recent_analyses (original_text, exclude_stop_words, word_frequencies) VALUES ('{}','{}','{}')""".format(original_text,exclude_stop_words,top_25)
+	return query
 
 def stem_word(word):
 	#cover cases of talk, play, pass, and copy

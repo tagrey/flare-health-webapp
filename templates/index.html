@@ -1,44 +1,105 @@
 <!DOCTYPE html>
 <html>
+<head>
+<link href='//fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+<link href='//fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+<style>
+html {height: 100%;}
+body {
+  background-color: #ccccff;
+}
+h1 {
+  font-family: 'Cookie', sans-serif;
+  color: #344;
+  text-shadow: 4px 4px 3px rgba(0,0,0,0.1);
+  text-align:center;
+  font-size:450%;
+}
+body {
+  font-family: 'Roboto Slab', sans-serif;
+  color: #333;
+}
+h1:hover {
+  color:black;
+}
+</style>
+</head>
 
 <body>
 <h1>
   Word Frequency Analyzer
 </h1>
-<form method=post enctype=multipart/form-data action=/upload_document>
-    <input type=file name=file>
-    <input type=submit value=Upload>
-</form>
 
-{% with feedback = get_flashed_messages(category_filter=["feedback"]) %}
-{% if feedback %}
-<div class="feedback">
-	<ul>
-	{%- for msg in feedback %}
-	<li>{{ msg }}</li>
-	{% endfor -%}
-	</ul>
+<div align=left>
+	<form method=post enctype=multipart/form-data action=/upload_document>
+	    <input type=file name=file>
+	    <input type=submit value=Upload>
+	</form>
+
+	{% with feedback = get_flashed_messages(category_filter=["feedback"]) %}
+	{% if feedback %}
+	<div class="feedback">
+		<ul>
+		{%- for msg in feedback %}
+		<li>{{ msg }}</li>
+		{% endfor -%}
+		</ul>
+	</div>
+	{% endif %}
+	{% endwith %}
+
+	{% with text_preview = get_flashed_messages(category_filter=["text_preview"]) %}
+	{% if text_preview %}
+	<div class="box" style='overflow:hidden;text-overflow: ellipsis;width: 50%;display: block;white-space: nowrap;'>
+		{%- for msg in text_preview %}
+		{{msg}}
+		{% endfor -%}
+	</div>
+	{% endif %}
+	{% endwith %}
+
+	<form name="analyze" method=post action='/analyze'>
+		<label for="exclude-stop-words">Exclude Stop Words</label>
+		<input type="checkbox" name="exclude-stop-words">
+		<input type='Submit' value='Analyze File'>
+	</form>
+
+	{% with analysis = get_flashed_messages(category_filter=["analysis"]) %}
+	{% if analysis %}
+	<div class="alert-message block-message error">
+		<ul>
+		{%- for msg in analysis %}
+		<li>{{ msg }}</li>
+		{% endfor -%}
+		</ul>
+	</div>
+	{% endif %}
+	{% endwith %}
 </div>
-{% endif %}
-{% endwith %}
 
-<form name="analyze" method=post action='/analyze'>
-	<label for="exclude-stop-words">Exclude Stop Words</label>
-	<input type="checkbox" name="exclude-stop-words">
-	<input type='Submit' value='Analyze File'>
-</form>
+<div align=right>
+	<label for="view_analysis">View an Old Analysis</label>
+	<form name="view_analysis" method=post action='/view_analysis'>
+		<select>
+		  {% for item in data %}
+            +"<option>{{ item|safe }}</option>"
+            {% endfor %}
+		</select>
+		<input type='Submit' value='View'>
+	</form>
 
-{% with analysis = get_flashed_messages(category_filter=["analysis"]) %}
-{% if analysis %}
-<div class="alert-message block-message error">
-	<ul>
-	{%- for msg in analysis %}
-	<li>{{ msg }}</li>
-	{% endfor -%}
-	</ul>
+	{% with old_analysis = get_flashed_messages(category_filter=["old_analysis"]) %}
+	{% if old_analysis %}
+	<div class="alert-message block-message error">
+		<ul>
+		{%- for msg in analysis %}
+		<li>{{ msg }}</li>
+		{% endfor -%}
+		</ul>
+	</div>
+	{% endif %}
+	{% endwith %}
 </div>
-{% endif %}
-{% endwith %}
 
 </body>
 
